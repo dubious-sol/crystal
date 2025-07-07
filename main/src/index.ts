@@ -92,6 +92,8 @@ async function createWindow() {
 
   if (isDevelopment) {
     await mainWindow.loadURL('http://localhost:3000');
+    // Friendly banner so users know where to open the UI
+    console.log('\u2728 Crystal GUI available at http://localhost:3000');
     mainWindow.webContents.openDevTools();
     
     // Enable IPC debugging in development
