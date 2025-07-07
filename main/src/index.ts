@@ -20,6 +20,7 @@ import { setupAutoUpdater } from './autoUpdater';
 import { setupEventListeners } from './events';
 import { AppServices } from './ipc/types';
 import { ClaudeCodeManager } from './services/claudeCodeManager';
+import { startIpcBridge } from './ipcBridge';
 
 let mainWindow: BrowserWindow | null = null;
 let taskQueue: TaskQueue | null = null;
@@ -109,6 +110,9 @@ async function createWindow() {
         }
         return result;
       };
+      const registry = (global as any).ipcRegistry ?? new Map<string, any>();
+      (global as any).ipcRegistry = registry;
+      registry.set(channel, listener);
       return originalHandle.call(this, channel, wrappedListener);
     };
   } else {
@@ -409,6 +413,12 @@ app.whenReady().then(async () => {
       createWindow();
     }
   });
+
+  if (process.env.CRYSTAL_EXPOSE_IPC === '1' || process.argv.includes('--expose-ipc')) {
+    const portArgIndex = process.argv.findIndex((a) => a === '--ipc-port');
+    const port = portArgIndex !== -1 ? Number(process.argv[portArgIndex + 1]) : undefined;
+    startIpcBridge({ port });
+  }
 });
 
 app.on('window-all-closed', () => {
