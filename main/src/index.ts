@@ -91,7 +91,7 @@ async function createWindow() {
   });
 
   if (isDevelopment) {
-    await mainWindow.loadURL('http://localhost:4521');
+    await mainWindow.loadURL('http://localhost:3000');
     mainWindow.webContents.openDevTools();
     
     // Enable IPC debugging in development
